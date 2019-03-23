@@ -1,0 +1,110 @@
+.kenzap .kenzap-progressbar-1 *{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.kenzap .kenzap-progressbar-1 img,
+.kenzap .kenzap-progressbar-1 ul,
+.kenzap .kenzap-progressbar-1 h3,
+.kenzap .kenzap-progressbar-1 li,
+.kenzap .kenzap-progressbar-1 p,
+.kenzap .kenzap-progressbar-1 a{
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border: none;
+  text-decoration: none;
+  list-style:none
+}
+
+.kenzap .kenzap-progressbar-1 .clearfix:after{
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+
+.kenzap .kenzap-progressbar-1.autoPadding {
+  padding: calc(30px + (var(--paddings) - 30) * ((100vw - 300px) / (1600 - 300))) 0;
+}
+
+.kenzap .kenzap-progressbar-1 .kenzap-container {
+  max-width: 1170px;
+  margin:0 auto;
+  padding:0 0px;
+}
+
+.kenzap .kenzap-progressbar-1 .kenzap-container:after{
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+
+.kenzap .kenzap-progressbar-1 h3{
+	font-size:var(--titleSize, 19px);
+	line-height:var(--titleSize, 19px);
+	color:var(--textColor, #333);  
+	margin:0 0 10px;
+	font-weight:var(--fontWeight, 700);  
+}
+
+.kenzap .kenzap-progressbar-1 .progressbar {
+	margin-top: 5px;
+	margin-bottom: 35px;
+	position: relative;
+	background-color: #fff;
+	width:auto;
+}
+
+.kenzap .kenzap-progressbar-1 .kp-bar-cont span:last-child .progressbar{
+	margin-bottom: 0px;
+}
+
+.kenzap .kenzap-progressbar-1 .proggress{
+	height: 8px;
+	width: 10px;
+	background-color: #000;
+	position:relative
+}
+
+.kenzap .kenzap-progressbar-1 .percentCount{
+	clear: both;
+	position:absolute;
+	right:0;
+	top: calc(-9px - var(--titleSize, 19px));
+	font-size:var(--titleSize, 19px);
+	line-height:var(--titleSize, 19px);
+	color:#000;
+	font-weight:var(--fontWeight, 700);
+}
+
+.kenzap .kenzap-progressbar-1 .percentCountTitle{
+	display: none;
+}
+
+.kenzap .kenzap-progressbar-1.kenzap-sm .percentCountTitle,
+.kenzap .kenzap-progressbar-1.kenzap-xs .percentCountTitle{
+	display: inline-block;
+}
+
+.kenzap .kenzap-progressbar-1.kenzap-sm .percentCount,
+.kenzap .kenzap-progressbar-1.kenzap-xs .percentCount{
+	display: none;
+}
+
+@media screen and (max-width: 48em) {
+	/* width 768px */
+	.kenzap .kenzap-progressbar-1 .percentCountTitle{
+		display: inline-block;
+	}
+
+	.kenzap .kenzap-progressbar-1 .percentCount{
+	  display: none;
+	}
+}
