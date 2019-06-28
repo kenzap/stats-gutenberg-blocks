@@ -1,10 +1,10 @@
-const { __ } = wp.i18n; // Import __() from wp.i18n
+const { __ } = wp.i18n;
 const { Component } = wp.element;
-const { InspectorControls, PanelColorSettings } = wp.editor;
+const { InspectorControls, PanelColorSettings, InnerBlocks } = wp.editor;
 const { RangeControl, TextControl, TextareaControl, ToggleControl, PanelBody } = wp.components;
-
-import { defaultItem, getStyles } from './block';
+import { defaultItem, getStyles, typographyArr } from './block';
 import { InspectorContainer, ContainerEdit } from '../commonComponents/container/container';
+import { TypographyContainer, getTypography } from '../commonComponents/typography/typography';
 
 /**
  * Keys for new blocks
@@ -105,17 +105,6 @@ export default class Edit extends Component {
                             help={ __( 'Amount of number blocks to display.', 'kenzap-stats' ) }
                         />
 
-                        { attributes.showTitle &&
-                        <RangeControl
-                            label={ __( 'Title size', 'kenzap-stats' ) }
-                            value={ attributes.titleSize }
-                            onChange={ ( titleSize ) => setAttributes( { titleSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-                        }
-
                         <RangeControl
                             label={ __( 'Bar thickness', 'kenzap-stats' ) }
                             value={ attributes.barThickness }
@@ -123,15 +112,6 @@ export default class Edit extends Component {
                             min={ 1 }
                             max={ 20 }
                         />
-
-                        <RangeControl
-                            label={ __( 'Font weight', 'kenzap-stats' ) }
-                            value={ attributes.fontWeight }
-                            onChange={ ( fontWeight ) => setAttributes( { fontWeight } ) }
-                            min={ 1 }
-                            max={ 8 }
-                        />
-
                     </PanelBody>
 
                     <PanelBody
@@ -171,6 +151,7 @@ export default class Edit extends Component {
                                             {
                                                 value: item.color,
                                                 onChange: ( value ) => {
+                                                    if(!value) value = "#333";
                                                     this.onChangePropertyItem( 'color', value, index, true );
                                                 },
                                                 label: __( 'Bar', 'kenzap-stats' ),
@@ -178,6 +159,7 @@ export default class Edit extends Component {
                                             {
                                                 value: item.color2,
                                                 onChange: ( value ) => {
+                                                    if(!value) value = "#333";
                                                     this.onChangePropertyItem( 'color2', value, index, true );
                                                 },
                                                 label: __( 'Title', 'kenzap-stats' ),
@@ -191,9 +173,16 @@ export default class Edit extends Component {
 
                     </PanelBody>
 
+                    <TypographyContainer
+                        setAttributes={ setAttributes }
+                        typographyArr={ typographyArr }
+                        { ...attributes }
+                    />
+
                     <InspectorContainer
                         setAttributes={ setAttributes }
                         { ...attributes }
+                        withNested
                         withPadding
                         withWidth100
                         withBackground
@@ -209,12 +198,13 @@ export default class Edit extends Component {
                         >
 
                         <div className="kenzap-container kp-bar-cont" style={ kenzapContanerStyles }>
+                            { attributes.nestedBlocks == 'top' && <InnerBlocks /> }
                             { attributes.items && attributes.items.map( ( item, index ) => (
 
                                 <div>
-                                    <h3 style={ { color: `${ item.color2 }`, } }>
+                                    <h3 style={ { ...getTypography( attributes, 0 ), ...{ color: item.color2 } } }>
                                     { item.title+" " }
-                                        <span className="percentCountTitle">
+                                        <span className="percentCountTitle" style={ { ...getTypography( attributes, 1 ), ...{ color: item.color2 } } }>
                                             { "- "+item.sign }%
                                         </span>
                                     </h3>
@@ -228,6 +218,7 @@ export default class Edit extends Component {
                                 </div>
 
                             ) ) }
+                            { attributes.nestedBlocks == 'bottom' && <InnerBlocks /> }
                         </div>
 
 

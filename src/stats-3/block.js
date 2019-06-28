@@ -1,16 +1,11 @@
-/**
- * BLOCK: stats-1
- *
- */
-
-//  Import CSS.
 import './style.scss';
 import './editor.scss';
 
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
-
+const { InnerBlocks } = wp.editor;
 import { blockProps, ContainerSave } from '../commonComponents/container/container';
+import { getTypography } from '../commonComponents/typography/typography';
 import Edit from './edit';
 
 /**
@@ -69,17 +64,9 @@ export const getStyles = attributes => {
 
     const vars = {
         '--paddings': `${ attributes.containerPadding }`,
-        '--paddingsMin': `${ attributes.containerPadding / 4 }`,
-        '--paddingsMinPx': `${ attributes.containerPadding / 4 }px`,
-        '--textColor': `${ attributes.textColor }`,
-        '--textColor2': `${ attributes.textColor2 }`,
-        '--textOutColor': `${ attributes.textOutColor }`,
-        '--textThickness': `${ parseInt(attributes.textThickness) * 100 }`,
-        '--fontWeight': `${ parseInt(attributes.fontWeight) * 100 }`,
+        '--paddings2': `${ attributes.containerSidePadding }px`,
         '--numberSize': `${ attributes.numberSize }px`,
         '--circleSize': `${ attributes.circleSize }px`,
-        '--titleSize': `${ attributes.titleSize }px`,
-        '--descriptionSize': `${ attributes.descriptionSize }px`,
     };
 
     return {
@@ -87,6 +74,34 @@ export const getStyles = attributes => {
         kenzapContanerStyles,
     };
 };
+
+/**
+ * Define typography defaults
+ */
+export const typographyArr = JSON.stringify([
+    {
+        'title': __( '- Number', 'kenzap-stats' ),
+        'font-size': 25,
+        'font-weight': 6,
+        'line-height': 25,
+        'margin-bottom': 0,
+        'color':'-'
+    },
+    {
+        'title': __( '- Title', 'kenzap-stats' ),
+        'font-size': 24,
+        'font-weight': 6,
+        'line-height': 50,
+        'margin-bottom': 5,
+    },
+    {
+        'title': __( '- Description ', 'kenzap-stats' ),
+        'font-size': 16,
+        'font-weight': 4,
+        'line-height': 25,
+        'margin-bottom': 10,
+    },
+]);
 
 /**
  * Register: a Gutenberg Block.
@@ -112,6 +127,9 @@ registerBlockType( 'kenzap/stats-3', {
     ],
     anchor: true,
     html: true,
+    supports: {
+        align: [ 'full', 'wide' ],
+    },
     attributes: {
         ...blockProps,
 
@@ -130,24 +148,9 @@ registerBlockType( 'kenzap/stats-3', {
             default: 176,
         },
 
-        titleSize: {
-            type: 'number',
-            default: 19,
-        },
-
-        descriptionSize: {
-            type: 'number',
-            default: 15,
-        },
-
         textThickness: {
             type: 'number',
             default: 3,
-        },
-
-        fontWeight: {
-            type: 'number',
-            default: 7,
         },
 
         showTitle: {
@@ -160,22 +163,17 @@ registerBlockType( 'kenzap/stats-3', {
             default: true,
         },
 
-        textColor: {
-            type: 'string',
-            default: '#333',
-        },
-
-        textColor2: {
-            type: 'string',
-            default: '#333',
-        },
-
         textOutColor: {
             type: 'string',
-            default: '#333',
+            //default: '#333',
         },
 
         items: {
+            type: 'array',
+            default: [],
+        },
+
+        typography: {
             type: 'array',
             default: [],
         },
@@ -202,7 +200,7 @@ registerBlockType( 'kenzap/stats-3', {
                 items: [ ...JSON.parse( defaultSubBlocks ) ],
                 isFirstLoad: false,
             } );
-            // TODO It is very bad solution to avoid low speed working of setAttributes function
+
             props.attributes.items = JSON.parse( defaultSubBlocks );
             if ( ! props.attributes.blockUniqId ) {
                 props.setAttributes( {
@@ -243,7 +241,7 @@ registerBlockType( 'kenzap/stats-3', {
                     >
 
                     <div className="kenzap-container" style={ kenzapContanerStyles }>
-
+                        { attributes.nestedBlocks == 'top' && <InnerBlocks.Content /> }
                         <div class="kenzap-row kp-circle-cont" data-time={ attributes.time } data-delay={ attributes.delay }>
                             { attributes.items && attributes.items.map( ( item, index ) => (
                                 
@@ -252,17 +250,17 @@ registerBlockType( 'kenzap/stats-3', {
 
                                         <div class="kp-circle" data-size={ attributes.circleSize } data-border={ attributes.textThickness } data-color={ item.color } data-value={ parseInt(item.sign)/100 }>
                                             <canvas className="kp-rem" width={ attributes.circleSize } height={ attributes.circleSize } ></canvas>
-                                            <strong style={{ color: item.color2 }}></strong>
+                                            <strong style={ { ...getTypography( attributes, 0 ), ...{ color: item.color2 } }}></strong>
                                         </div>
-                                        { attributes.showTitle && <h3>{ item.title }</h3> }
-                                        { attributes.showDesc && <p>{ item.description }</p> }
+                                        { attributes.showTitle && <h3 style={ getTypography( attributes, 1 ) } >{ item.title }</h3> }
+                                        { attributes.showDesc && <p style={ getTypography( attributes, 2 ) } >{ item.description }</p> }
 
                                     </div>
                                 </div>
 
                             ) ) }
                         </div>
-
+                        { attributes.nestedBlocks == 'bottom' && <InnerBlocks.Content /> }
                     </div>
                 </ContainerSave>
             </div>

@@ -33,7 +33,7 @@
 .kenzap .kenzap-countdown-1 .kenzap-container {
   max-width: 1170px;
   margin:0 auto;
-  padding:0 0px;
+  padding:0 var(--paddings2,0);
 }
 
 .kenzap .kenzap-countdown-1 .kenzap-container:after{
@@ -46,7 +46,7 @@
 }
 
 .kenzap .kenzap-countdown-1 .kp-countdown span{
-  font-size:calc(var(--descriptionSize, 15) * 1px);
+  //font-size:calc(var(--descriptionSize, 15) * 1px);
   line-height: 1;
   color:var(--textColor2, #333); 
   width:20%;
@@ -57,14 +57,11 @@
 
 .kenzap .kenzap-countdown-1 .kp-countdown span strong{
   display:block;
-  font-size: calc(60px + (var(--titleSize, 90) - 60) * ((100vw - 300px) / (1600 - 300)));
-  line-height:calc(60px + (var(--titleSize, 90) - 60) * ((100vw - 300px) / (1600 - 300)));
   margin:0 0 10px;
   color:var(--textColor, #333); 
   -webkit-text-stroke: 1px var(--textOutColor, #333);
 	-moz-text-stroke: 1px var(--textOutColor, #333);
   text-stroke: 1px var(--textOutColor, #333);
-  font-weight: var(--textThickness, 700);
 }
 
 .kenzap .kenzap-countdown-1 .kenzap-xs .kp-countdown{

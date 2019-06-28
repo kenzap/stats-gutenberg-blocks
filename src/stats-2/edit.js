@@ -1,10 +1,10 @@
-const { __ } = wp.i18n; // Import __() from wp.i18n
+const { __ } = wp.i18n;
 const { Component } = wp.element;
-const { InspectorControls, PanelColorSettings } = wp.editor;
+const { InspectorControls, PanelColorSettings, InnerBlocks } = wp.editor;
 const { RangeControl, TextControl, ToggleControl, PanelBody } = wp.components;
-
-import { defaultItem, getStyles, getCounterValue, getCounterPrefix, getCounterPostfix } from './block';
+import { defaultItem, typographyArr, getStyles, getCounterValue, getCounterPrefix, getCounterPostfix } from './block';
 import { InspectorContainer, ContainerEdit } from '../commonComponents/container/container';
+import { TypographyContainer, getTypography } from '../commonComponents/typography/typography';
 
 /**
  * Keys for new blocks
@@ -105,39 +105,10 @@ export default class Edit extends Component {
                             help={ __( 'Amount of number blocks to display.', 'kenzap-stats' ) }
                         />
 
-                        <RangeControl
-                            label={ __( 'Number size', 'kenzap-stats' ) }
-                            value={ attributes.titleSize }
-                            onChange={ ( titleSize ) => setAttributes( { titleSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-
                         <ToggleControl
                             label={ __( 'Show title', 'kenzap-stats' ) }
                             checked={ attributes.showDesc}
                             onChange={ (showDesc) => setAttributes( { showDesc } ) }
-                        />
-
-                        { attributes.showDesc &&
-                        <RangeControl
-                            label={ __( 'Title size', 'kenzap-stats' ) }
-                            value={ attributes.descriptionSize }
-                            onChange={ ( descriptionSize ) => setAttributes( { descriptionSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-                        }
-
-                        <RangeControl
-                            label={ __( 'Font weight', 'kenzap-stats' ) }
-                            value={ attributes.textThickness }
-                            onChange={ ( textThickness ) => setAttributes( { textThickness } ) }
-                            min={ 1 }
-                            max={ 8 }
-                            help={ __( 'Note. Actual boldness may vary depending on the theme and fonts used.', 'kenzap-stats' ) }
                         />
 
                         <RangeControl
@@ -161,25 +132,11 @@ export default class Edit extends Component {
                             initialOpen={ false }
                             colorSettings={ [
                                 {
-                                    value: attributes.textColor,
-                                    onChange: ( value ) => {
-                                        return setAttributes( { textColor: value } );
-                                    },
-                                    label: __( 'Numbers color', 'kenzap-stats' ),
-                                },
-                                {
                                     value: attributes.textOutColor,
                                     onChange: ( textOutColor ) => {
                                         return setAttributes( { textOutColor } );
                                     },
                                     label: __( 'Numbers outline color', 'kenzap-stats' ),
-                                },
-                                {
-                                    value: attributes.textColor2,
-                                    onChange: ( textColor2 ) => {
-                                        return setAttributes( { textColor2 } );
-                                    },
-                                    label: __( 'Title color', 'kenzap-stats' ),
                                 },
                             ] }
                         />
@@ -219,6 +176,12 @@ export default class Edit extends Component {
 
                     </PanelBody>
 
+                    <TypographyContainer
+                        setAttributes={ setAttributes }
+                        typographyArr={ typographyArr }
+                        { ...attributes }
+                    />
+
                     <InspectorContainer
                         setAttributes={ setAttributes }
                         { ...attributes }
@@ -242,9 +205,9 @@ export default class Edit extends Component {
 
                                 <div class="kenzap-col-3">
                                     <div class="kp-counter-box" title={ __( 'Adjust values on the right' ) }>
-                                        <strong>{ getCounterPrefix(item.title) }<span class="kp-counter-val-edit">{ getCounterValue(item.title) }</span>{ getCounterPostfix(item.title) }</strong>
+                                        <strong style={ getTypography( attributes, 0 ) }>{ getCounterPrefix(item.title) }<span style={ getTypography( attributes, 1 ) } class="kp-counter-val-edit">{ getCounterValue(item.title) }</span>{ getCounterPostfix(item.title) }</strong>
                                         { attributes.showDesc && 
-                                        <p>{ item.description }</p>
+                                        <p style={ getTypography( attributes, 2 ) }>{ item.description }</p>
                                         }
                                     </div>
                                 </div>

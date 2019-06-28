@@ -1,18 +1,11 @@
-const { __ } = wp.i18n; // Import __() from wp.i18n
+const { __ } = wp.i18n;
 const { Component } = wp.element;
-const { InspectorControls, PanelColorSettings } = wp.editor;
-const { RangeControl, CheckboxControl, PanelBody, DateTimePicker, PanelRow } = wp.components;
+const { InspectorControls, PanelColorSettings, InnerBlocks } = wp.editor;
+const { CheckboxControl, PanelBody, DateTimePicker, PanelRow } = wp.components;
 const { __experimentalGetSettings } = wp.date;
-
-import { getStyles } from './block';
-
+import { getStyles, getInline, typographyArr } from './block';
 import { InspectorContainer, ContainerEdit } from '../commonComponents/container/container';
-
-/**
- * Keys for new blocks
- * @type {number}
- */
-let key = 0;
+import { TypographyContainer, getTypography } from '../commonComponents/typography/typography';
 
 /**
  * The edit function describes the structure of your block in the context of the editor.
@@ -53,7 +46,7 @@ export default class Edit extends Component {
             var d2 = new Date(); d2.setMonth(d2.getMonth() + 1);
             attributes.date = d2.getFullYear()+"-"+_twoDigits(d2.getMonth()+1)+"-"+_twoDigits(d2.getDate())+"T23:59:59";
         }
-                
+
         return (
             <div>
                 <InspectorControls>
@@ -70,33 +63,6 @@ export default class Edit extends Component {
                             currentDate={ attributes.date }
                             onChange={ ( date ) => setAttributes( { date } ) }
                             is12Hour={ is12HourTime }
-                        />
-
-                        <RangeControl
-                            label={ __( 'Number size', 'kenzap-stats' ) }
-                            value={ attributes.titleSize }
-                            onChange={ ( titleSize ) => setAttributes( { titleSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-
-                        <RangeControl
-                            label={ __( 'Title size', 'kenzap-stats' ) }
-                            value={ attributes.descriptionSize }
-                            onChange={ ( descriptionSize ) => setAttributes( { descriptionSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-
-                        <RangeControl
-                            label={ __( 'Font weight', 'kenzap-stats' ) }
-                            value={ attributes.textThickness }
-                            onChange={ ( textThickness ) => setAttributes( { textThickness } ) }
-                            min={ 1 }
-                            max={ 8 }
-                            help={ __( 'Actual font weight may vary depending on theme and font used.', 'kenzap-stats' ) }
                         />
 
                         <CheckboxControl
@@ -141,34 +107,27 @@ export default class Edit extends Component {
                             initialOpen={ false }
                             colorSettings={ [
                                 {
-                                    value: attributes.textColor,
-                                    onChange: ( value ) => {
-                                        return setAttributes( { textColor: value } );
-                                    },
-                                    label: __( 'Numbers color', 'kenzap-stats' ),
-                                },
-                                {
                                     value: attributes.textOutColor,
                                     onChange: ( textOutColor ) => {
                                         return setAttributes( { textOutColor } );
                                     },
-                                    label: __( 'Numbers outline color', 'kenzap-stats' ),
-                                },
-                                {
-                                    value: attributes.textColor2,
-                                    onChange: ( textColor2 ) => {
-                                        return setAttributes( { textColor2 } );
-                                    },
-                                    label: __( 'Title color', 'kenzap-stats' ),
+                                    label: __( 'Outline color', 'kenzap-stats' ),
                                 },
                             ] }
                         />
                     </PanelBody>
                     
+                    <TypographyContainer
+                        setAttributes={ setAttributes }
+                        typographyArr={ typographyArr }
+                        { ...attributes }
+                    />
+
                     <InspectorContainer
                         setAttributes={ setAttributes }
                         { ...attributes }
                         withPadding
+                        withNested
                         withWidth100
                         withBackground
                         withAutoPadding
@@ -183,7 +142,9 @@ export default class Edit extends Component {
                         >
 
                         <div className="kenzap-container" style={ kenzapContanerStyles }>
-                            <div class="kp-countdown" data-yeart={ __( 'Years' ) } data-montht={ __( 'Months' ) } data-dayt={ __( 'Days' ) } data-hourt={ __( 'Hours' ) } data-minutet={ __( 'Minutes' ) } data-secondt={ __( 'Seconds' ) } data-year={ attributes.cbYear } data-month={ attributes.cbMonth } data-day={ attributes.cbDay } data-hour={ attributes.cbHour } data-minute={ attributes.cbMinute } data-second={ attributes.cbSecond } data-time={ attributes.date }></div>
+                            { attributes.nestedBlocks == 'top' && <InnerBlocks /> }
+                            <div class="kp-countdown" data-t0={ getInline( attributes, 0 ) } data-t1={ getInline( attributes, 1 ) } data-yeart={ __( 'Years' ) } data-montht={ __( 'Months' ) } data-dayt={ __( 'Days' ) } data-hourt={ __( 'Hours' ) } data-minutet={ __( 'Minutes' ) } data-secondt={ __( 'Seconds' ) } data-year={ attributes.cbYear } data-month={ attributes.cbMonth } data-day={ attributes.cbDay } data-hour={ attributes.cbHour } data-minute={ attributes.cbMinute } data-second={ attributes.cbSecond } data-time={ attributes.date }></div>
+                            { attributes.nestedBlocks == 'bottom' && <InnerBlocks /> }
                         </div>
                     </ContainerEdit>
                 </div>

@@ -1,10 +1,10 @@
-const { __ } = wp.i18n; // Import __() from wp.i18n
+const { __ } = wp.i18n;
 const { Component } = wp.element;
-const { InspectorControls, PanelColorSettings } = wp.editor;
+const { InspectorControls, PanelColorSettings, InnerBlocks } = wp.editor;
 const { RangeControl, TextControl, TextareaControl, ToggleControl, PanelBody } = wp.components;
-
-import { defaultItem, getStyles } from './block';
+import { defaultItem, getStyles, typographyArr } from './block';
 import { InspectorContainer, ContainerEdit } from '../commonComponents/container/container';
+import { TypographyContainer, getTypography } from '../commonComponents/typography/typography';
 
 /**
  * Keys for new blocks
@@ -101,6 +101,8 @@ export default class Edit extends Component {
 
         const { vars, kenzapContanerStyles } = getStyles( attributes );
 
+        let t0 = getTypography( attributes, 0 );
+
         return (
             <div>
                 <InspectorControls>
@@ -130,11 +132,11 @@ export default class Edit extends Component {
                         />
 
                         <RangeControl
-                            label={ __( 'Number size', 'kenzap-stats' ) }
-                            value={ attributes.numberSize }
-                            onChange={ ( numberSize ) => setAttributes( { numberSize } ) }
-                            min={ 10 }
-                            max={ 50 }
+                            label={ __( 'Line thickness', 'kenzap-stats' ) }
+                            value={ attributes.textThickness }
+                            onChange={ ( textThickness ) => setAttributes( { textThickness } ) }
+                            min={ 1 }
+                            max={ 15 }
                         />
 
                         <ToggleControl
@@ -143,71 +145,13 @@ export default class Edit extends Component {
                             onChange={ (showTitle) => setAttributes( { showTitle } ) }
                         />
 
-                        { attributes.showTitle &&
-                        <RangeControl
-                            label={ __( 'Title size', 'kenzap-stats' ) }
-                            value={ attributes.titleSize }
-                            onChange={ ( titleSize ) => setAttributes( { titleSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-                        }
-
                         <ToggleControl
                             label={ __( 'Show description', 'kenzap-stats' ) }
                             checked={ attributes.showDesc}
                             onChange={ (showDesc) => setAttributes( { showDesc } ) }
                         />
 
-                        { attributes.showDesc &&
-                        <RangeControl
-                            label={ __( 'Description size', 'kenzap-stats' ) }
-                            value={ attributes.descriptionSize }
-                            onChange={ ( descriptionSize ) => setAttributes( { descriptionSize } ) }
-                            min={ 10 }
-                            max={ 130 }
-                            help={ __( 'Size is adjusted proportionally screen width.', 'kenzap-stats' ) }
-                        />
-                        }
-
-                        <RangeControl
-                            label={ __( 'Line thickness', 'kenzap-stats' ) }
-                            value={ attributes.textThickness }
-                            onChange={ ( textThickness ) => setAttributes( { textThickness } ) }
-                            min={ 1 }
-                            max={ 15 }
-                        />
-
-                        <RangeControl
-                            label={ __( 'Font weight', 'kenzap-stats' ) }
-                            value={ attributes.fontWeight }
-                            onChange={ ( fontWeight ) => setAttributes( { fontWeight } ) }
-                            min={ 1 }
-                            max={ 8 }
-                        />
-
-                        <PanelColorSettings
-                            title={ __( 'Colors', 'kenzap-stats' ) }
-                            initialOpen={ false }
-                            colorSettings={ [
-                                {
-                                    value: attributes.textColor,
-                                    onChange: ( value ) => {
-                                        return setAttributes( { textColor: value } );
-                                    },
-                                    label: __( 'Title', 'kenzap-stats' ),
-                                },
-                                {
-                                    value: attributes.textColor2,
-                                    onChange: ( textColor2 ) => {
-                                        return setAttributes( { textColor2 } );
-                                    },
-                                    label: __( 'Description', 'kenzap-stats' ),
-                                },
-                            ] }
-                        />
-                    </PanelBody>
+                    </PanelBody> 
 
                     <PanelBody
                         title={ __( 'Texts', 'kenzap-stats' ) }
@@ -254,6 +198,7 @@ export default class Edit extends Component {
                                             {
                                                 value: item.color,
                                                 onChange: ( value ) => {
+                                                    if(!value) value = "#333";
                                                     this.onChangePropertyItem( 'color', value, index, true );
                                                 },
                                                 label: __( 'Circle', 'kenzap-stats' ),
@@ -261,6 +206,7 @@ export default class Edit extends Component {
                                             {
                                                 value: item.color2,
                                                 onChange: ( value ) => {
+                                                    if(!value) value = "#333";
                                                     this.onChangePropertyItem( 'color2', value, index, true );
                                                 },
                                                 label: __( 'Number', 'kenzap-stats' ),
@@ -274,10 +220,17 @@ export default class Edit extends Component {
 
                     </PanelBody>
 
+                    <TypographyContainer
+                        setAttributes={ setAttributes }
+                        typographyArr={ typographyArr }
+                        { ...attributes }
+                    />
+
                     <InspectorContainer
                         setAttributes={ setAttributes }
                         { ...attributes }
                         withPadding
+                        withNested
                         withWidth100
                         withBackground
                         withAutoPadding
@@ -292,6 +245,7 @@ export default class Edit extends Component {
                         >
 
                         <div className="kenzap-container" style={ kenzapContanerStyles }>
+                            { attributes.nestedBlocks == 'top' && <InnerBlocks /> }
                             <div class="kenzap-row kp-circle-cont" data-time={ __( 'Time' ) } data-delay={ __( 'Delay' ) }>
                             { attributes.items && attributes.items.map( ( item, index ) => (
 
@@ -300,18 +254,18 @@ export default class Edit extends Component {
 
                                         <div class="kp-circle" data-size={ attributes.circleSize } data-border={ attributes.textThickness } data-color={ item.color } data-color2={ item.color2 } data-value={ parseInt(item.sign)/100 }>
                                             <canvas className="kp-rem" width={ attributes.circleSize } height={ attributes.circleSize } ></canvas>
-                                            <strong style={{ color: item.color2 }}></strong>
+                                            <strong style={ { ...getTypography( attributes, 0 ), ...{ color: item.color2 } }}></strong>
                                         </div>
-                                        { attributes.showTitle && <h3>{ item.title }</h3> }
-                                        { attributes.showDesc &&  <p>{ item.description }</p> }
+                                        { attributes.showTitle && <h3 style={ getTypography( attributes, 1 ) }>{ item.title }</h3> }
+                                        { attributes.showDesc &&  <p style={ getTypography( attributes, 2 ) }>{ item.description }</p> }
 
                                     </div>
                                 </div>
 
                             ) ) }
                             </div>
+                            { attributes.nestedBlocks == 'bottom' && <InnerBlocks /> }
                         </div>
-
                     </ContainerEdit>
                 </div>
             </div>

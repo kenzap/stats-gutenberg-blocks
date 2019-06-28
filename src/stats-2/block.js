@@ -1,16 +1,11 @@
-/**
- * BLOCK: stats-1
- *
- */
-
-//  Import CSS.
 import './style.scss';
 import './editor.scss';
 
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
-
+const { InnerBlocks } = wp.editor;
 import { blockProps, ContainerSave } from '../commonComponents/container/container';
+import { getTypography } from '../commonComponents/typography/typography';
 import Edit from './edit';
 
 /**
@@ -59,15 +54,10 @@ export const getStyles = attributes => {
 
     const vars = {
         '--paddings': `${ attributes.containerPadding }`,
-        '--paddingsMin': `${ attributes.containerPadding / 4 }`,
-        '--paddingsMinPx': `${ attributes.containerPadding / 4 }px`,
-        '--textColor': `${ attributes.textColor }`,
-        '--textColor2': `${ attributes.textColor2 }`,
-        '--textOutColor': `${ attributes.textOutColor }`,
-        '--textThickness': `${ parseInt(attributes.textThickness) * 100 }`,
-        '--titleSize': `${ attributes.titleSize }`,
-        '--descriptionSize': `${ attributes.descriptionSize }`,
+        '--paddings2': `${ attributes.containerSidePadding }px`,
     };
+
+    if(attributes.textOutColor){ vars['--textOutColor'] = attributes.textOutColor; }
 
     return {
         vars,
@@ -128,6 +118,44 @@ export const getCounterPostfix = value => {
 }
 
 /**
+ * Define typography defaults
+ */
+export const typographyArr = JSON.stringify([
+    {
+        'title': __( '- Sign', 'kenzap-stats' ),
+        'font-size': 40,
+        'font-weight': 6,
+        'line-height': 50,
+        'margin-bottom': 10,
+    },
+    {
+        'title': __( '- Counter', 'kenzap-stats' ),
+        'font-size': 54,
+        'font-weight': 6,
+        'line-height': 50,
+        'margin-bottom': 10,
+    },
+    {
+        'title': __( '- Title', 'kenzap-stats' ),
+        'font-size': 15,
+        'font-weight': 4,
+        'line-height': 26,
+    },
+]);
+
+/**
+ * Converts CSS styles object into inline CSS string
+ * @param {String} attributes - attributes
+ * @returns {Integer} i - typographyArr index
+ */
+export const getInline = ( attributes, i ) => {
+    let t = getTypography( attributes, i );
+    let t_ = "";
+    Object.getOwnPropertyNames(t).forEach(key => { t_ += key+":"+t[key]+";" });
+    return t_;
+};
+
+/**
  * Register: a Gutenberg Block.
  *
  * Registers a new block provided a unique name and an object defining its
@@ -151,27 +179,15 @@ registerBlockType( 'kenzap/stats-2', {
     ],
     anchor: true,
     html: true,
+    supports: {
+        align: [ 'full', 'wide' ],
+    },
     attributes: {
         ...blockProps,
 
         elements: {
             type: 'number',
             default: 4,
-        },
-
-        titleSize: {
-            type: 'number',
-            default: 64,
-        },
-
-        descriptionSize: {
-            type: 'number',
-            default: 16,
-        },
-
-        textThickness: {
-            type: 'number',
-            default: 5,
         },
 
         showDesc: {
@@ -189,22 +205,17 @@ registerBlockType( 'kenzap/stats-2', {
             default: 25,
         },
 
-        textColor: {
-            type: 'string',
-            default: '#333',
-        },
-
-        textColor2: {
-            type: 'string',
-            default: '#333',
-        },
-
         textOutColor: {
             type: 'string',
-            default: '#333',
+            //default: '#333',
         },
 
         items: {
+            type: 'array',
+            default: [],
+        },
+
+        typography: {
             type: 'array',
             default: [],
         },
@@ -231,7 +242,7 @@ registerBlockType( 'kenzap/stats-2', {
                 items: [ ...JSON.parse( defaultSubBlocks ) ],
                 isFirstLoad: false,
             } );
-            // TODO It is very bad solution to avoid low speed working of setAttributes function
+           
             props.attributes.items = JSON.parse( defaultSubBlocks );
             if ( ! props.attributes.blockUniqId ) {
                 props.setAttributes( {
@@ -240,7 +251,7 @@ registerBlockType( 'kenzap/stats-2', {
             }
         }
         
-        setTimeout(function(){kenzapBanner2($);},500);
+        //setTimeout(function(){launchCounter($);},500);
 
         return ( <Edit { ...props } /> );
     },
@@ -272,22 +283,22 @@ registerBlockType( 'kenzap/stats-2', {
                     >
 
                     <div className="kenzap-container" style={ kenzapContanerStyles }>
-
+                        { attributes.nestedBlocks == 'top' && <InnerBlocks.Content /> }
                         <div class="kenzap-row kp-counter" data-time={ attributes.time } data-delay={ attributes.delay }>
                             { attributes.items && attributes.items.map( ( item, index ) => (
 
                                 <div class="kenzap-col-3">
                                     <div class="kp-counter-box">
-                                        <strong>{ getCounterPrefix(item.title) }<span class="kp-counter-val">{ getCounterValue(item.title) }</span>{ getCounterPostfix(item.title) }</strong>
+                                        <strong style={ getTypography( attributes, 0 ) } >{ getCounterPrefix(item.title) }<span style={ getTypography( attributes, 1 ) } class="kp-counter-val">{ getCounterValue(item.title) }</span>{ getCounterPostfix(item.title) }</strong>
                                         { attributes.showDesc && 
-                                        <p>{ item.description }</p> 
+                                        <p style={ getTypography( attributes, 2 ) } >{ item.description }</p> 
                                         }
                                     </div>
                                 </div>
 
                             ) ) }
                         </div>
-
+                        { attributes.nestedBlocks == 'bottom' && <InnerBlocks.Content /> }
                     </div>
                 </ContainerSave>
             </div>

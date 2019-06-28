@@ -1,16 +1,11 @@
-/**
- * BLOCK: stats-1
- *
- */
-
-//  Import CSS.
 import './style.scss';
 import './editor.scss';
 
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
-
+const { InnerBlocks } = wp.editor;
 import { blockProps, ContainerSave } from '../commonComponents/container/container';
+import { getTypography } from '../commonComponents/typography/typography';
 import Edit from './edit';
 
 /**
@@ -26,20 +21,46 @@ export const getStyles = attributes => {
 
     const vars = {
         '--paddings': `${ attributes.containerPadding }`,
-        '--paddingsMin': `${ attributes.containerPadding / 4 }`,
-        '--paddingsMinPx': `${ attributes.containerPadding / 4 }px`,
-        '--textColor': `${ attributes.textColor }`,
-        '--textColor2': `${ attributes.textColor2 }`,
-        '--textOutColor': `${ attributes.textOutColor }`,
-        '--textThickness': `${ parseInt(attributes.textThickness) * 100 }`,
-        '--titleSize': `${ attributes.titleSize }`,
-        '--descriptionSize': `${ attributes.descriptionSize }`,
+        '--paddings2': `${ attributes.containerSidePadding }px`,
     };
+
+    if(attributes.textOutColor){ vars['--textOutColor'] = attributes.textOutColor; }
 
     return {
         vars,
         kenzapContanerStyles,
     };
+};
+
+/**
+ * Define typography defaults
+ */
+export const typographyArr = JSON.stringify([
+    {
+        'title': __( '- Countdown', 'kenzap-stats' ),
+        'font-size': 60,
+        'font-weight': 6,
+        'line-height': 60,
+        'margin-bottom': 10,
+    },
+    {
+        'title': __( '- Title', 'kenzap-stats' ),
+        'font-size': 15,
+        'font-weight': 4,
+        'line-height': 26,
+    },
+]);
+
+/**
+ * Converts CSS styles object into inline CSS string
+ * @param {String} attributes - attributes
+ * @returns {Integer} i - typographyArr index
+ */
+export const getInline = ( attributes, i ) => {
+    let t = getTypography( attributes, i );
+    let t_ = "";
+    Object.getOwnPropertyNames(t).forEach(key => { t_ += key+":"+t[key]+";" });
+    return t_;
 };
 
 /**
@@ -57,6 +78,7 @@ export const getStyles = attributes => {
  */
 registerBlockType( 'kenzap/stats-1', {
     title: __( 'Kenzap Countdown 1', 'kenzap-stats' ),
+    description: __( 'Note! Some changes of this block can be only previewed on front-end.', 'kenzap-stats' ),
     icon: 'backup',
     category: 'layout',
     keywords: [
@@ -66,27 +88,15 @@ registerBlockType( 'kenzap/stats-1', {
     ],
     anchor: true,
     html: true,
+    supports: {
+        align: [ 'full', 'wide' ],
+    },
     attributes: {
         ...blockProps,
 
         date: {
             type: 'string',
             default: '',
-        },
-
-        titleSize: {
-            type: 'number',
-            default: 90,
-        },
-
-        descriptionSize: {
-            type: 'number',
-            default: 15,
-        },
-
-        textThickness: {
-            type: 'number',
-            default: 5,
         },
 
         cbYear: {
@@ -119,22 +129,17 @@ registerBlockType( 'kenzap/stats-1', {
             default: true,
         },
 
-        textColor: {
-            type: 'string',
-            default: '#333',
-        },
-
-        textColor2: {
-            type: 'string',
-            default: '#333',
-        },
-
         textOutColor: {
             type: 'string',
-            default: '#333',
+            //default: '#333',
         },
 
         items: {
+            type: 'array',
+            default: [],
+        },
+
+        typography: {
             type: 'array',
             default: [],
         },
@@ -151,7 +156,7 @@ registerBlockType( 'kenzap/stats-1', {
     },
 
     edit: ( props ) => {
-        
+
         setTimeout(function(){launchCountdown($);},500);
 
         return ( <Edit { ...props } /> );
@@ -183,7 +188,9 @@ registerBlockType( 'kenzap/stats-1', {
                     withPadding
                     >
                     <div className="kenzap-container" style={ kenzapContanerStyles }>
-                        <div class="kp-countdown" data-yeart={ __( 'Years' ) } data-montht={ __( 'Months' ) } data-dayt={ __( 'Days' ) } data-hourt={ __( 'Hours' ) } data-minutet={ __( 'Minutes' ) } data-secondt={ __( 'Seconds' ) } data-time={ attributes.date } data-year={ attributes.cbYear } data-month={ attributes.cbMonth } data-day={ attributes.cbDay } data-hour={ attributes.cbHour } data-minute={ attributes.cbMinute } data-second={ attributes.cbSecond } ></div>
+                        { attributes.nestedBlocks == 'top' && <InnerBlocks.Content /> }
+                        <div class="kp-countdown" data-t0={ getInline( attributes, 0 ) } data-t1={ getInline( attributes, 1 ) } data-yeart={ __( 'Years' ) } data-yeart={ __( 'Years' ) } data-montht={ __( 'Months' ) } data-dayt={ __( 'Days' ) } data-hourt={ __( 'Hours' ) } data-minutet={ __( 'Minutes' ) } data-secondt={ __( 'Seconds' ) } data-time={ attributes.date } data-year={ attributes.cbYear } data-month={ attributes.cbMonth } data-day={ attributes.cbDay } data-hour={ attributes.cbHour } data-minute={ attributes.cbMinute } data-second={ attributes.cbSecond } ></div>
+                        { attributes.nestedBlocks == 'bottom' && <InnerBlocks.Content /> }
                     </div>
                 </ContainerSave>
             </div>

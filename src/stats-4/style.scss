@@ -34,7 +34,7 @@
 .kenzap .kenzap-progressbar-1 .kenzap-container {
   max-width: 1170px;
   margin:0 auto;
-  padding:0 0px;
+  padding:0 var(--paddings2,0);
 }
 
 .kenzap .kenzap-progressbar-1 .kenzap-container:after{
@@ -47,11 +47,8 @@
 }
 
 .kenzap .kenzap-progressbar-1 h3{
-	font-size:var(--titleSize, 19px);
-	line-height:var(--titleSize, 19px);
 	color:var(--textColor, #333);  
 	margin:0 0 10px;
-	font-weight:var(--fontWeight, 700);  
 }
 
 .kenzap .kenzap-progressbar-1 .progressbar {
@@ -77,11 +74,8 @@
 	clear: both;
 	position:absolute;
 	right:0;
-	top: calc(-9px - var(--titleSize, 19px));
-	font-size:var(--titleSize, 19px);
-	line-height:var(--titleSize, 19px);
+	top: 10px;
 	color:#000;
-	font-weight:var(--fontWeight, 700);
 }
 
 .kenzap .kenzap-progressbar-1 .percentCountTitle{

@@ -1,16 +1,11 @@
-/**
- * BLOCK: stats-1
- *
- */
-
-//  Import CSS.
 import './style.scss';
 import './editor.scss';
 
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
-
+const { InnerBlocks } = wp.editor;
 import { blockProps, ContainerSave } from '../commonComponents/container/container';
+import { getTypography } from '../commonComponents/typography/typography';
 import Edit from './edit';
 
 /**
@@ -64,10 +59,7 @@ export const getStyles = attributes => {
 
     const vars = {
         '--paddings': `${ attributes.containerPadding }`,
-        '--paddingsMin': `${ attributes.containerPadding / 4 }`,
-        '--paddingsMinPx': `${ attributes.containerPadding / 4 }px`,
-        '--fontWeight': `${ parseInt(attributes.fontWeight) * 100 }`,
-        '--titleSize': `${ attributes.titleSize }px`,
+        '--paddings2': `${ attributes.containerSidePadding }px`,
     };
 
     return {
@@ -75,6 +67,28 @@ export const getStyles = attributes => {
         kenzapContanerStyles,
     };
 };
+
+/**
+ * Define typography defaults
+ */
+export const typographyArr = JSON.stringify([
+    {
+        'title': __( '- Title', 'kenzap-stats' ),
+        'font-size': 19,
+        'font-weight': 6,
+        'line-height': 19,
+        'margin-bottom': 10,
+        'color':'-'
+    },
+    {
+        'title': __( '- Number', 'kenzap-stats' ),
+        'font-size': 19,
+        'font-weight': 6,
+        'line-height': 19,
+        'margin-bottom': 0,
+        'color':'-'
+    },
+]);
 
 /**
  * Register: a Gutenberg Block.
@@ -100,6 +114,9 @@ registerBlockType( 'kenzap/stats-4', {
     ],
     anchor: true,
     html: true,
+    supports: {
+        align: [ 'full', 'wide' ],
+    },
     attributes: {
         ...blockProps,
 
@@ -108,27 +125,27 @@ registerBlockType( 'kenzap/stats-4', {
             default: 4,
         },
 
-        titleSize: {
-            type: 'number',
-            default: 19,
-        },
-
         barThickness: {
             type: 'number',
             default: 3,
         },
 
-        fontWeight: {
-            type: 'number',
-            default: 7,
-        },
+        // fontWeight: {
+        //     type: 'number',
+        //     default: 7,
+        // },
 
-        showTitle: {
-            type: 'boolean',
-            default: true,
-        },
+        // showTitle: {
+        //     type: 'boolean',
+        //     default: true,
+        // },
 
         items: {
+            type: 'array',
+            default: [],
+        },
+
+        typography: {
             type: 'array',
             default: [],
         },
@@ -155,7 +172,7 @@ registerBlockType( 'kenzap/stats-4', {
                 items: [ ...JSON.parse( defaultSubBlocks ) ],
                 isFirstLoad: false,
             } );
-            // TODO It is very bad solution to avoid low speed working of setAttributes function
+
             props.attributes.items = JSON.parse( defaultSubBlocks );
             if ( ! props.attributes.blockUniqId ) {
                 props.setAttributes( {
@@ -196,10 +213,11 @@ registerBlockType( 'kenzap/stats-4', {
                     >
         
                     <div className="kenzap-container kp-bar-cont" style={ kenzapContanerStyles }>
+                        { attributes.nestedBlocks == 'top' && <InnerBlocks.Content /> }
                         { attributes.items && attributes.items.map( ( item, index ) => (
 
                             <div>
-                                <h3 style={ { color: `${ item.color2 }`, } }>
+                                <h3 style={ { ...getTypography( attributes, 0 ), ...{ color: item.color2 } } }>
                                 { item.title+" " }
                                     <span className="percentCountTitle">
                                         { "- "+item.sign }%
@@ -207,7 +225,7 @@ registerBlockType( 'kenzap/stats-4', {
                                 </h3>
                                 <div class="kp-bar-1" data-border={ attributes.barThickness } data-color={ item.color } data-color2={ item.color2 } data-percent={ item.sign }>
                                     <div class="progressbar" >
-                                        <div class="proggress" style={{ height: `${ attributes.barThickness }` + 'px', width: "1%" }}>
+                                        <div class="proggress" style={ { ...getTypography( attributes, 1 ), ...{ color: item.color2 } } }>
                                             <div class="percentCount"></div>
                                         </div>
                                     </div>
@@ -215,6 +233,7 @@ registerBlockType( 'kenzap/stats-4', {
                             </div>
 
                         ) ) }
+                        { attributes.nestedBlocks == 'bottom' && <InnerBlocks.Content /> }
                     </div>
 
                 </ContainerSave>

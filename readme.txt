@@ -2,8 +2,8 @@ Kenzap Stats
 Contributors: kenzap
 Tags: counters, bars, countdown
 Requires at least: 5.0
-Tested up to: 5.1.9
-Stable tag: 1.0.0
+Tested up to: 5.2
+Stable tag: 1.1.0
 Donate link: https://kenzap.com/wordpress-plugin-donation-page/
 Requires PHP: 5.6
 License: GPL2+

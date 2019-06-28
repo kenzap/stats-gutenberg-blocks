@@ -27,12 +27,12 @@ function launchCountdown($){
 		
 		var temp = '';
 
-		if(year){temp += '<span><strong>%Y</strong> '+yeart+'</span>';}
-		if(month){temp += '<span><strong>%m</strong> '+montht+'</span> ';}
-		if(day){temp += '<span><strong>%D</strong> '+dayt+'</span>';}
-		if(hour){temp += '<span><strong>%H</strong> '+hourt+'</span>';}
-		if(minute){temp += '<span><strong>%M</strong> '+minutet+'</span>';}
-		if(second){temp += '<span><strong>%S</strong> '+secondt+'</span>';}
+		if(year){temp += '<span style="'+$countdown.attr('data-t1')+'"><strong style="'+$countdown.attr('data-t0')+'">%Y</strong> '+yeart+'</span>';}
+		if(month){temp += '<span style="'+$countdown.attr('data-t1')+'"><strong style="'+$countdown.attr('data-t0')+'">%m</strong> '+montht+'</span> ';}
+		if(day){temp += '<span style="'+$countdown.attr('data-t1')+'"><strong style="'+$countdown.attr('data-t0')+'">%D</strong> '+dayt+'</span>';}
+		if(hour){temp += '<span style="'+$countdown.attr('data-t1')+'"><strong style="'+$countdown.attr('data-t0')+'">%H</strong> '+hourt+'</span>';}
+		if(minute){temp += '<span style="'+$countdown.attr('data-t1')+'"><strong style="'+$countdown.attr('data-t0')+'">%M</strong> '+minutet+'</span>';}
+		if(second){temp += '<span style="'+$countdown.attr('data-t1')+'"><strong style="'+$countdown.attr('data-t0')+'">%S</strong> '+secondt+'</span>';}
 
 		$countdown.countdown(finalDate, function(event) {
 			var $this = $countdown.html(event.strftime(temp)

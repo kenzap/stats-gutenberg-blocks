@@ -8,7 +8,7 @@
 				launchBars($);
 
 			},10);
-	});
+	  });
 
 }( jQuery ) );
 
