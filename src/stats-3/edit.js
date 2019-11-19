@@ -236,6 +236,7 @@ export default class Edit extends Component {
                         withAutoPadding
                     />
                 </InspectorControls>
+                
                 <div className={ className ? className : '' } style={ vars } >
                     <ContainerEdit
                         className={ `kenzap-stats-1 block-${ attributes.blockUniqId } ${ isSelected ? 'selected' : '' } ` }
