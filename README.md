@@ -4,7 +4,7 @@ Create beautiful step section on your website.
 To be used with WordPress Gutenberg.
 
 
-![Create beatiful steps section with Gutenberg](https://kenzap.cloud/website/img/steps-5.png)
+![Create beatiful steps section with Gutenberg](https://cdn.kenzap.com/github/img/steps-5.png)
 
 <b>Block is easy customizable:</b>
 
